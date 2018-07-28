@@ -1,0 +1,3 @@
+TPConfig V1.1 is a configuration tool for the ThinkPad TrackPoint.
+It depends on SystemD and requires Lazarus to build.
+It also has to be run as root.

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/fpc" Date="1526930586"/>
-  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -l -vewnhibq -Fi/home/beno/Documents/app/TPconfig/lib/i386-linux -Fu/usr/share/lazarus/1.8.4/lcl/units/i386-linux/gtk2 -Fu/usr/share/lazarus/1.8.4/lcl/units/i386-linux -Fu/usr/share/lazarus/1.8.4/components/lazutils/lib/i386-linux -Fu/usr/share/lazarus/1.8.4/packager/units/i386-linux -Fu/home/beno/Documents/app/TPconfig/ -FU/home/beno/Documents/app/TPconfig/lib/i386-linux/ -dLCL -dLCLgtk2 tpconfig.lpr"/>
-</CONFIG>
