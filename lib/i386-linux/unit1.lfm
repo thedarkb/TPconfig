@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 606
+  Left = 449
   Height = 138
-  Top = 605
+  Top = 258
   Width = 201
   BorderStyle = bsDialog
   Caption = 'TPConfig V1.1'
