@@ -1,14 +1,14 @@
 object Form1: TForm1
-  Left = 449
+  Left = 606
   Height = 138
-  Top = 258
+  Top = 605
   Width = 201
   BorderStyle = bsDialog
-  Caption = 'TP Config'
+  Caption = 'TPConfig V1.1'
   ClientHeight = 138
   ClientWidth = 201
   OnCreate = FormCreate
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '1.8.4.0'
   object speedGroup: TGroupBox
     Left = 8
     Height = 56

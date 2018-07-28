@@ -30,8 +30,8 @@ type
 
 const
   conpath = '/etc/tmpfiles.d/tpconfig.conf';
-  devpath1 = '/sys/devices/platform/i8042/serio1/serio2/';
-  devpath2 = '/sys/devices/platform/i8042/serio1/';
+  devpath1 = '/sys/devices/platform/i8042/serio1/serio2/'; //hardcoded paths to devices
+  devpath2 = '/sys/devices/platform/i8042/serio1/'; //TODO: make less arse
   root = 'root';
 
 var
@@ -72,54 +72,52 @@ begin
   end;
   if not tp then
      begin
-        messagereturn := Application.MessageBox('ERROR: No PS/2 TrackPoint!', 'Fatal Error');
+        messagereturn := Application.MessageBox('ERROR: No TrackPoint found!', 'Fatal Error');
         halt;
      end;
   if FileExists(conpath) then
   begin
-     {AssignFile(confH, conpath);
-     reset(confH);
-     readln(confH, confile);
-     debuglbl.Caption := filein;}
-     AssignFile(sysfile, workingpath+'sensitivity');
-     reset(sysfile);
-     readln(sysfile, sensitivityt);
-     {debuglbl.caption := sensitivityt;}
-     val(sensitivityt, sensitivity);
-     senseBar.Position := sensitivity;
-     AssignFile(sysfile, workingpath+'speed');
-     reset(sysfile);
-     readln(sysfile, speedt);
-     val(speedt, speed);
-     speedBar.Position := speed;
-     fpsystem('whoami >/tmp/tpconftmp');
-     AssignFile(tempfile, '/tmp/tpconftmp');
-     reset(tempfile);
-     readln(tempfile, user);
-     DeleteFile('/tmp/tpconftmp');
+     user := GetEnvironmentVariable('USER');
      if not (user=root) then
      begin
         messagereturn := Application.MessageBox('ERROR: Not root!', 'Fatal Error');
         halt;
-
      end;
+     {check current sensitivity}
+     AssignFile(sysfile, workingpath+'sensitivity');
+     reset(sysfile);
+     readln(sysfile, sensitivityt);
+     val(sensitivityt, sensitivity);
+     senseBar.Position := sensitivity; {initialises the slider with current setting}
+
+     {check current speed}
+     AssignFile(sysfile, workingpath+'speed');
+     reset(sysfile);
+     readln(sysfile, speedt);
+     val(speedt, speed);
+     speedBar.Position := speed;  {ditto above}
   end;
 end;
 
 procedure TForm1.applyClick(Sender: TObject);
 begin
+  //copies the value on the sliders into bytes for IntToStr later.
   sensitivity := senseBar.Position;
   speed := speedBar.Position;
+
   AssignFile(confH, conpath);
   rewrite(confH);
+  {puts together the line of the SystemD script which sets the sensitivity
+  on boot}
   assembledStr := 'w '+workingpath+'sensitivity - - - - '+IntToStr(sensitivity);
-  {debuglbl.Caption := assembledStr;}
   writeln(confH, assembledStr);
+  //ditto above but for speed.
   assembledStr := 'w '+workingpath+'speed - - - - '+IntToStr(speed);
   writeln(confH, assembledStr);
-  CloseFile(confH);
-  {messagereturn := Application.MessageBox('sysd file written', 'Debugger');}
-  fpsystem('systemd-tmpfiles --prefix=/sys --create');
+
+  CloseFile(confH); //closes the script, writing the contents to the disk
+  fpsystem('systemd-tmpfiles --prefix=/sys --create'); {so that this system call
+  can tell systemD to run the script}
 end;
 
 procedure TForm1.quitClick(Sender: TObject);
