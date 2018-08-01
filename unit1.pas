@@ -79,7 +79,7 @@ begin
      user := fpgeteuid;
      if not (user=0) then
      begin
-        messagereturn := Application.MessageBox('ERROR: Not root!', 'Fatal Error');
+        messagereturn := Application.MessageBox('ERROR: Must be run as root!', 'Fatal Error');
         halt;
      end;
      {check current sensitivity}
