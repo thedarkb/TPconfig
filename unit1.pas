@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, Unix;
+  ComCtrls, Unix, BaseUnix;
 
 type
 
@@ -32,7 +32,6 @@ const
   conpath = '/etc/tmpfiles.d/tpconfig.conf';
   devpath1 = '/sys/devices/platform/i8042/serio1/serio2/'; //hardcoded paths to devices
   devpath2 = '/sys/devices/platform/i8042/serio1/'; //TODO: make less arse
-  root = 'root';
 
 var
   Form1: TForm1;
@@ -46,7 +45,7 @@ var
   sensitivity: byte;
   speed: byte;
   tempfile: text;
-  user: string;
+  user: LongWord;
   messagereturn: longint;
   assembledStr: string;
 
@@ -77,8 +76,8 @@ begin
      end;
   if FileExists(conpath) then
   begin
-     user := GetEnvironmentVariable('USER');
-     if not (user=root) then
+     user := fpgeteuid;
+     if not (user=0) then
      begin
         messagereturn := Application.MessageBox('ERROR: Not root!', 'Fatal Error');
         halt;
