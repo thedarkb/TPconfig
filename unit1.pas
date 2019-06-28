@@ -27,6 +27,7 @@ type
     senseBar: TTrackBar;
     procedure applyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure pathsetClick(Sender: TObject);
     procedure quitClick(Sender: TObject);
   private
     { private declarations }
@@ -54,6 +55,7 @@ var
   speed: byte;
   drift: byte;
   setnum: byte;
+  setstr: string;
   tempfile: text;
   user: LongWord;
   messagereturn: longint;
@@ -85,7 +87,7 @@ begin
      begin
         messagereturn := Application.MessageBox('No TrackPoint found, you must specify a path.', 'Error');
         apply.Enabled := false;
-        pathbox.ReadOnly := false;
+        pathbox.Enabled := true;
         pathset.Enabled := true;
      end;
   if FileExists(conpath) then
@@ -129,25 +131,70 @@ begin
   end;
 end;
 
+procedure TForm1.pathsetClick(Sender: TObject);
+begin
+  workingpath := pathbox.Text;
+
+  {check current sensitivity}
+  AssignFile(sysfile, workingpath+'sensitivity');
+  reset(sysfile);
+  readln(sysfile, sensitivityt);
+  val(sensitivityt, sensitivity);
+  senseBar.Position := sensitivity; {initialises the slider with current setting}
+
+  {check current speed}
+  AssignFile(sysfile, workingpath+'speed');
+  reset(sysfile);
+  readln(sysfile, speedt);
+  val(speedt, speed);
+  speedBar.Position := speed;  {ditto above}
+
+  {check current drift time}
+  AssignFile(sysfile, workingpath+'drift_time');
+  reset(sysfile);
+  readln(sysfile, driftt);
+  val(driftt, drift);
+  driftBar.Position := drift;  {ditto above}
+
+  {check current "press to select" setting}
+  AssignFile(sysfile, workingpath+'press_to_select');
+  reset(sysfile);
+  readln(sysfile, sett);
+  val(sett, setnum);
+  if not setnum = 0 then
+     begin
+        setbox.Checked := true;  {ditto above, just substitute box for slider}
+     end; //I'm well aware that having two of these check blocks is redundant
+end; //I'm just too lazy to put them in a procedure when I can ctrl+c ctrl+v
+
 procedure TForm1.applyClick(Sender: TObject);
 begin
   //copies the value on the sliders into bytes for IntToStr later.
   sensitivity := senseBar.Position;
   speed := speedBar.Position;
+  drift := driftBar.Position;
+  setstr := '0';
+  if setbox.Checked then
+     setstr := '1';
 
   AssignFile(confH, conpath);
   rewrite(confH);
-  {puts together the line of the SystemD script which sets the sensitivity
+  {puts together the lines of the SystemD script which sets the sensitivity
   on boot}
   assembledStr := 'w '+workingpath+'sensitivity - - - - '+IntToStr(sensitivity);
   writeln(confH, assembledStr);
   //ditto above but for speed.
   assembledStr := 'w '+workingpath+'speed - - - - '+IntToStr(speed);
   writeln(confH, assembledStr);
+  //drift this time
+  assembledStr := 'w '+workingpath+'drift_time - - - - '+IntToStr(drift);
+  writeln(confH, assembledStr);
+  //now for press to select
+  assembledStr := 'w '+workingpath+'press_to_select - - - - '+setstr;
+  writeln(confH, assembledStr);
 
   CloseFile(confH); //closes the script, writing the contents to the disk
-  fpsystem('systemd-tmpfiles --prefix=/sys --create'); {so that this system call
-  can tell systemD to run the script}
+  fpsystem('systemd-tmpfiles --prefix=/sys --create'); {tells systemD to run the script}
 end;
 
 procedure TForm1.quitClick(Sender: TObject);

@@ -79,8 +79,8 @@ object Form1: TForm1
       Height = 25
       Top = 0
       Width = 128
+      Enabled = False
       ParentShowHint = False
-      ReadOnly = True
       TabOrder = 0
     end
     object pathset: TButton
@@ -90,6 +90,7 @@ object Form1: TForm1
       Width = 31
       Caption = 'Set'
       Enabled = False
+      OnClick = pathsetClick
       TabOrder = 1
     end
   end
