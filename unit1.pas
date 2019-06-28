@@ -13,8 +13,14 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    pathset: TButton;
+    setbox: TCheckBox;
+    pathbox: TEdit;
+    pathGroup: TGroupBox;
     quit: TButton;
     apply: TButton;
+    driftBar: TTrackBar;
+    driftGroup: TGroupBox;
     speedGroup: TGroupBox;
     senseGroup: TGroupBox;
     speedBar: TTrackBar;
@@ -42,8 +48,12 @@ var
   sysfile: text;
   sensitivityt: string;
   speedt: string;
+  driftt: string;
+  sett: string;
   sensitivity: byte;
   speed: byte;
+  drift: byte;
+  setnum: byte;
   tempfile: text;
   user: LongWord;
   messagereturn: longint;
@@ -63,15 +73,20 @@ begin
   begin
      tp := true;
      workingpath := devpath1;
+     pathbox.Text := workingpath;
   end;
   if FileExists(devpath2+'sensitivity') then
   begin
      tp := true;
      workingpath := devpath2;
+     pathbox.Text := workingpath;
   end;
   if not tp then
      begin
         messagereturn := Application.MessageBox('No TrackPoint found, you must specify a path.', 'Error');
+        apply.Enabled := false;
+        pathbox.ReadOnly := false;
+        pathset.Enabled := true;
      end;
   if FileExists(conpath) then
   begin
@@ -79,7 +94,7 @@ begin
      if not (user=0) then
      begin
         messagereturn := Application.MessageBox('ERROR: Must be run as root!', 'Fatal Error');
-        halt;
+        //halt;
      end;
      {check current sensitivity}
      AssignFile(sysfile, workingpath+'sensitivity');
@@ -94,6 +109,23 @@ begin
      readln(sysfile, speedt);
      val(speedt, speed);
      speedBar.Position := speed;  {ditto above}
+
+     {check current drift time}
+     AssignFile(sysfile, workingpath+'drift_time');
+     reset(sysfile);
+     readln(sysfile, driftt);
+     val(driftt, drift);
+     driftBar.Position := drift;  {ditto above}
+
+     {check current "press to select" setting}
+     AssignFile(sysfile, workingpath+'press_to_select');
+     reset(sysfile);
+     readln(sysfile, sett);
+     val(sett, setnum);
+     if not setnum = 0 then
+        begin
+           setbox.Checked := true;  {ditto above, just substitute box for slider}
+        end;
   end;
 end;
 
