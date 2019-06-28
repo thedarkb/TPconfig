@@ -173,16 +173,24 @@ begin
   sensitivity := senseBar.Position;
   speed := speedBar.Position;
   drift := driftBar.Position;
-
+  setstr := '0';
+  if setbox.Checked then
+     setstr := '1';
 
   AssignFile(confH, conpath);
   rewrite(confH);
-  {puts together the line of the SystemD script which sets the sensitivity
+  {puts together the lines of the SystemD script which sets the sensitivity
   on boot}
   assembledStr := 'w '+workingpath+'sensitivity - - - - '+IntToStr(sensitivity);
   writeln(confH, assembledStr);
   //ditto above but for speed.
   assembledStr := 'w '+workingpath+'speed - - - - '+IntToStr(speed);
+  writeln(confH, assembledStr);
+  //drift this time
+  assembledStr := 'w '+workingpath+'drift_time - - - - '+IntToStr(drift);
+  writeln(confH, assembledStr);
+  //now for press to select
+  assembledStr := 'w '+workingpath+'press_to_select - - - - '+setstr;
   writeln(confH, assembledStr);
 
   CloseFile(confH); //closes the script, writing the contents to the disk

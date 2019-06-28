@@ -96,7 +96,7 @@ begin
      if not (user=0) then
      begin
         messagereturn := Application.MessageBox('ERROR: Must be run as root!', 'Fatal Error');
-        //halt;
+        halt;
      end;
      {check current sensitivity}
      AssignFile(sysfile, workingpath+'sensitivity');
