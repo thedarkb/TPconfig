@@ -1,7 +1,10 @@
-TPConfig V1.1.1 is a configuration tool for the ThinkPad TrackPoint.
+TPConfig V1.1.2 ALPHA(!) is a configuration tool for the ThinkPad TrackPoint.
 It requires SystemD and requires Lazarus to build.
 It also has to be run as root.
 If you'd like to uninstall this, make sure to delete tpconfig.conf from /etc/tmpfiles.d
 
-This tool is known to work on the R30, X40, X61s, T60, X200, P50, X250
-It is known to fail on the T480
+This is an unstable version and you're better off looking at the releases on the git repo if you want the finished
+product.
+
+This tool is known to work on the R30, X40, X61s, T60, X200, P50 and X250.
+It is known to fail on the T480.
