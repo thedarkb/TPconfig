@@ -71,8 +71,7 @@ begin
   end;
   if not tp then
      begin
-        messagereturn := Application.MessageBox('ERROR: No TrackPoint found!', 'Fatal Error');
-        halt;
+        messagereturn := Application.MessageBox('No TrackPoint found, you must specify a path.', 'Error');
      end;
   if FileExists(conpath) then
   begin
