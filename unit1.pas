@@ -60,6 +60,7 @@ var
   user: LongWord;
   messagereturn: longint;
   assembledStr: string;
+  checkStr: string;
 
 implementation
 
@@ -85,7 +86,7 @@ begin
   end;
   if not tp then
      begin
-        messagereturn := Application.MessageBox('No TrackPoint found, you must specify a path.', 'Error');
+        messagereturn := Application.MessageBox('No TrackPoint found at the default path, you must specify one.', 'Error');
         apply.Enabled := false;
         pathbox.Enabled := true;
         pathset.Enabled := true;
@@ -98,73 +99,84 @@ begin
         messagereturn := Application.MessageBox('ERROR: Must be run as root!', 'Fatal Error');
         halt;
      end;
-     {check current sensitivity}
-     AssignFile(sysfile, workingpath+'sensitivity');
-     reset(sysfile);
-     readln(sysfile, sensitivityt);
-     val(sensitivityt, sensitivity);
-     senseBar.Position := sensitivity; {initialises the slider with current setting}
+     if FileExists(workingpath+'sensitivity') then
+     begin
+          {check current sensitivity}
+          AssignFile(sysfile, workingpath+'sensitivity');
+          reset(sysfile);
+          readln(sysfile, sensitivityt);
+          val(sensitivityt, sensitivity);
+          senseBar.Position := sensitivity; {initialises the slider with current setting}
 
-     {check current speed}
-     AssignFile(sysfile, workingpath+'speed');
-     reset(sysfile);
-     readln(sysfile, speedt);
-     val(speedt, speed);
-     speedBar.Position := speed;  {ditto above}
+          {check current speed}
+          AssignFile(sysfile, workingpath+'speed');
+          reset(sysfile);
+          readln(sysfile, speedt);
+          val(speedt, speed);
+          speedBar.Position := speed;  {ditto above}
 
-     {check current drift time}
-     AssignFile(sysfile, workingpath+'drift_time');
-     reset(sysfile);
-     readln(sysfile, driftt);
-     val(driftt, drift);
-     driftBar.Position := drift;  {ditto above}
+          {check current drift time}
+          AssignFile(sysfile, workingpath+'drift_time');
+          reset(sysfile);
+          readln(sysfile, driftt);
+          val(driftt, drift);
+          driftBar.Position := drift;  {ditto above}
 
-     {check current "press to select" setting}
-     AssignFile(sysfile, workingpath+'press_to_select');
-     reset(sysfile);
-     readln(sysfile, sett);
-     val(sett, setnum);
-     if not setnum = 0 then
-        begin
-           setbox.Checked := true;  {ditto above, just substitute box for slider}
-        end;
+          {check current "press to select" setting}
+          AssignFile(sysfile, workingpath+'press_to_select');
+          reset(sysfile);
+          readln(sysfile, sett);
+          val(sett, setnum);
+          if not setnum = 0 then
+          begin
+               setbox.Checked := true;  {ditto above, just substitute box for slider}
+          end;
+     end;
   end;
 end;
 
 procedure TForm1.pathsetClick(Sender: TObject);
 begin
-  workingpath := pathbox.Text;
-
-  {check current sensitivity}
-  AssignFile(sysfile, workingpath+'sensitivity');
-  reset(sysfile);
-  readln(sysfile, sensitivityt);
-  val(sensitivityt, sensitivity);
-  senseBar.Position := sensitivity; {initialises the slider with current setting}
-
-  {check current speed}
-  AssignFile(sysfile, workingpath+'speed');
-  reset(sysfile);
-  readln(sysfile, speedt);
-  val(speedt, speed);
-  speedBar.Position := speed;  {ditto above}
-
-  {check current drift time}
-  AssignFile(sysfile, workingpath+'drift_time');
-  reset(sysfile);
-  readln(sysfile, driftt);
-  val(driftt, drift);
-  driftBar.Position := drift;  {ditto above}
-
-  {check current "press to select" setting}
-  AssignFile(sysfile, workingpath+'press_to_select');
-  reset(sysfile);
-  readln(sysfile, sett);
-  val(sett, setnum);
-  if not setnum = 0 then
+  checkStr := pathbox.Text;
+  if FileExists(checkStr+'sensitivity') then
      begin
-        setbox.Checked := true;  {ditto above, just substitute box for slider}
-     end; //I'm well aware that having two of these check blocks is redundant
+        workingpath := checkStr;
+        apply.Enabled := true;
+
+        {check current sensitivity}
+        AssignFile(sysfile, workingpath+'sensitivity');
+        reset(sysfile);
+        readln(sysfile, sensitivityt);
+        val(sensitivityt, sensitivity);
+        senseBar.Position := sensitivity; {initialises the slider with current setting}
+
+        {check current speed}
+        AssignFile(sysfile, workingpath+'speed');
+        reset(sysfile);
+        readln(sysfile, speedt);
+        val(speedt, speed);
+        speedBar.Position := speed;  {ditto above}
+
+        {check current drift time}
+        AssignFile(sysfile, workingpath+'drift_time');
+        reset(sysfile);
+        readln(sysfile, driftt);
+        val(driftt, drift);
+        driftBar.Position := drift;  {ditto above}
+
+        {check current "press to select" setting}
+        AssignFile(sysfile, workingpath+'press_to_select');
+        reset(sysfile);
+        readln(sysfile, sett);
+        val(sett, setnum);
+        if not setnum = 0 then
+        begin
+             setbox.Checked := true;  {ditto above, just substitute box for slider}
+        end; //I'm well aware that having two of these check blocks is redundant
+        messagereturn := Application.MessageBox('TrackPoint found at path.', 'Success');
+     end;
+  if not FileExists(workingpath+'sensitivity') then
+  messagereturn := Application.MessageBox('No TrackPoint found at path.', 'Error');
 end; //I'm just too lazy to put them in a procedure when I can ctrl+c ctrl+v
 
 procedure TForm1.applyClick(Sender: TObject);
